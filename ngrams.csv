@@ -1,4 +1,4 @@
-"date,""month"",""week"",""word"",""target"",""n"",""type"""
+"""date"",""month"",""week"",""word"",""target"",""n"",""type"""
 "2014-10-09,""2014-10-01"",""2014-10-05"",""dope"",""thomas frieden"",1,""unigram"""
 "2014-10-09,""2014-10-01"",""2014-10-05"",""fool"",""thomas frieden"",1,""unigram"""
 "2015-06-16,""2015-06-01"",""2015-06-14"",""action"",""politicians"",1,""unigram"""
