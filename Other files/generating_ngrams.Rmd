@@ -1,0 +1,142 @@
+---
+title: "generate_ngrams"
+author: "Laura Navarro Soler | Xavier Vivancos García"
+date: "31/3/2021"
+output: html_document
+---
+
+```{r message=FALSE, warning=FALSE}
+# Load libraries
+library(tidyverse)
+library(tidytext)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+# Read tweets data
+data <- read.csv("https://raw.githubusercontent.com/xavivg91/shiny-contest-2021/main/trump.csv",
+                 encoding = "UTF-8", sep = ',') %>%
+  mutate_at(vars(target), factor) 
+data <- data[,-1]
+```
+
+```{r message=FALSE, warning=FALSE}
+# Unigrams 
+unigrams <- data %>%
+  unnest_tokens(word, insult) %>%
+  anti_join(stop_words) %>%
+  count(date, word, target) %>%
+  mutate(type = "unigram")
+```
+
+```{r message=FALSE, warning=FALSE}
+# Sentiment analysis 
+unigrams <- unigrams %>%
+  left_join(get_sentiments("bing"), by = "word") %>%  # positive or negative
+  # inner_join(get_sentiments("nrc"), by = "word") %>%  DUPLICATES! The same word can be            associated with different feelings
+  left_join(get_sentiments("afinn"), by = "word") %>% # -5 to 5
+  rename(bing_lexicon = "sentiment",
+         afinn_lexicon = "value")
+```
+
+```{r message=FALSE, warning=FALSE}
+# Bigrams
+bigrams <- data %>%
+  unnest_tokens(word, insult, token="ngrams", n=2) %>%
+  filter(!is.na(word)) %>%
+  separate(word, c("word1", "word2"), sep=" ") %>% 
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>% 
+  unite(word,word1, word2, sep=" ") %>% 
+  anti_join(stop_words) %>%
+  count(date, word, target) %>%
+  mutate(type = "bigram",
+         bing_lexicon = NA,
+         afinn_lexicon = NA)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Trigrams 
+trigrams <- data %>%
+  unnest_tokens(word, insult, token="ngrams", n=3) %>%
+  filter(!is.na(word)) %>%
+  separate(word, c("word1", "word2", "word3"), sep=" ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word,
+         !word3 %in% stop_words$word) %>%
+  unite(word, word1, word2, word3, sep=" ") %>% 
+  anti_join(stop_words) %>%
+  count(date, word, target) %>%
+  mutate(type = "trigram",
+         bing_lexicon = NA,
+         afinn_lexicon = NA)
+```
+
+```{r}
+# ngrams
+ngrams <- rbind(unigrams, bigrams, trigrams)
+
+# Remove "-" character
+ngrams$target <- str_replace_all(ngrams$target, "-", " ")
+```
+
+```{r}
+# Dates
+ngrams$date <- as.Date(ngrams$date, format = "%Y-%m-%d")
+ngrams$month <- as.Date(cut(ngrams$date, breaks = "month"))
+ngrams$week <- as.Date(cut(ngrams$date, breaks = "week", start.on.monday = FALSE)) 
+
+# Order
+ngrams <- ngrams[, c(1, 8, 9, 2, 3, 4, 5, 6, 7)]
+```
+
+
+```{r}
+# Save file
+write.csv(ngrams,"C:/Users/xviva/OneDrive/Desktop/ngrams.csv", row.names = FALSE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+# Validations OK!
+
+# TOP unigrams ngrams
+ngrams %>%
+  filter(type == "unigram") %>%
+  group_by(word) %>%
+  summarise(n = sum(n)) %>%
+  arrange(desc(n)) %>%
+  head(10)
+
+# TOP unigrams original file
+data %>%
+  unnest_tokens(word, insult) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  arrange(desc(n)) %>%
+  head(10)
+
+# TOP bigrams ngrams
+ngrams %>%
+  filter(type == "bigram") %>%
+  group_by(word) %>%
+  summarise(n = sum(n)) %>%
+  arrange(desc(n)) %>%
+  head(10)
+
+# TOP bigrams original file
+data %>%
+  unnest_tokens(word, insult, token="ngrams", n=2) %>%
+  filter(!is.na(word)) %>%
+  separate(word, c("word1", "word2"), sep=" ") %>% 
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>% 
+  unite(word,word1, word2, sep=" ") %>% 
+  anti_join(stop_words) %>%
+  count(word) %>%
+  arrange(desc(n)) %>%
+  head(10)
+```
+
+
+

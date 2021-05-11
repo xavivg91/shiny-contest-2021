@@ -1,0 +1,177 @@
+---
+title: "Shiny contest"
+author: "Laura Navarro Soler | Xavier Vivancos García"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    toc: yes
+    number_sections: yes
+    code_folding: hide
+    theme: cosmo
+    highlight: tango
+---
+
+```{r message=FALSE, warning=FALSE}
+# Cargamos librerías
+library(tidyverse)
+library(tidytext)
+library(wordcloud2)
+library(igraph) 
+library(ggraph) 
+library(textdata)
+
+# Leemos archivo
+trump <- read.csv("C:/Users/xviva/OneDrive/Desktop/trump.csv") 
+trump <- trump[,-1] %>%
+  mutate_at(vars(target), factor)
+```
+
+```{r message=FALSE, warning=TRUE, fig.align='center'}
+# Palabras más frecuentes en la columna 'insult'
+trump %>%
+  unnest_tokens(word, insult) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  arrange(desc(n)) %>%
+  head(n=10) %>%
+  ggplot(aes(x=reorder(word, n), y=n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x="Most common words", y="n") +
+  theme_bw()
+
+# Wordcloud
+freq <- trump %>%
+  unnest_tokens(word, insult) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  arrange(desc(n))
+
+# Wordcloud de la columna 'insult'
+# Quería hacer un wordcloud con la forma de la silueta de Trump. En teoría se puede, en Kaggle 
+# tengo algún ejemplo, pero este paquete siempre da muchos problemas...
+wordcloud2(freq, size=1)
+```
+
+
+```{r message=FALSE, warning=FALSE, fig.align='center'}
+# Bigrams más frecuentes en la columna 'insult'
+bigrams <- trump %>%
+  unnest_tokens(word, insult, token="ngrams", n=2) %>%
+  filter(!is.na(word)) %>%
+  separate(word, c("word1", "word2"), sep=" ") %>% 
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>% 
+  unite(word,word1, word2, sep=" ") %>% 
+  anti_join(stop_words) %>%
+  count(word) 
+
+bigrams %>%
+  arrange(desc(n)) %>%
+  head(n=10) %>%
+  ggplot(aes(x=reorder(word, n), y=n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x="Most common bigrams", y="n") +
+  theme_bw()
+
+# Grafo con bigrams
+bigrams_separated <- bigrams %>%
+  separate(word, c("word1", "word2"), sep=" ")
+
+bigrams_graph <- bigrams_separated %>%
+  filter(n>15) %>%
+  graph_from_data_frame() 
+  
+set.seed(2016)
+
+# Create and draw arrows 
+a <- grid::arrow(type="closed", length=unit(0.15, "inches"))
+
+# ggraph visualization
+ggraph(bigrams_graph, layout="fr") +
+  geom_edge_link(aes(edge_alpha=n), show.legend = FALSE,
+                 arrow=a, end_cap=circle(0.07, 'inches')) +
+  geom_node_point(color="lightblue", size=5) +
+  geom_node_text(aes(label=name), vjust=1, hjust=1) +
+  theme_void()
+```
+```{r message=FALSE, warning=FALSE, fig.align='center'}
+# Trigrams más frecuentes en la columna 'insult'
+trigrams <- trump %>%
+  unnest_tokens(word, insult, token="ngrams", n=3) %>%
+  filter(!is.na(word)) %>%
+  separate(word, c("word1", "word2", "word3"), sep=" ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word,
+         !word3 %in% stop_words$word) %>%
+  unite(word,word1, word2, word3, sep=" ") %>% 
+  anti_join(stop_words) %>%
+  count(word) 
+
+trigrams %>%
+  arrange(desc(n)) %>%
+  head(n=10) %>%
+  ggplot(aes(x=reorder(word, n), y=n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x="Most common trigrams", y="n") +
+  theme_bw()
+```
+
+```{r message=FALSE, warning=FALSE, fig.align='center'}
+# A quien se dirige más...
+trump %>%
+  count(target) %>%
+  arrange(desc(n)) %>%
+  head(n=10)
+
+# Palabras más frecuentes de la columna 'insult' a sus 10 primeros target
+trump %>%
+  filter(target %in% c("the-media", "democrats", "hillary-clinton", "trump-russia",
+                       "joe-biden", "the-new-york-times", "cnn", "impeachment-inquiry",
+                       "2020-election", "adam-schiff")) %>%
+  unnest_tokens(word, insult) %>%
+  anti_join(stop_words) %>%
+  select(target, word) %>%
+  count(target, word) %>%
+  group_by(target) %>%
+  top_n(10) %>%
+  ggplot(aes(x=reorder(word, n), y=n)) +
+  geom_col() +
+  coord_flip() +
+  theme_bw() +
+  facet_wrap(~target, scales="free") +
+  labs(x="Most common words")
+```
+
+```{r message=FALSE, warning=FALSE}
+# Sentiment analysis - AFINN lexicon: categoriza las palabras en un número del -5 al 5. 
+# Cuanto mayor es, más positiva es la palabra 
+trump %>%
+  unnest_tokens(word, insult) %>%
+  inner_join(get_sentiments("afinn")) %>%
+  count(value, sort=T) %>%
+  ggplot(aes(x=reorder(value, n), y=n)) +
+  geom_col() +
+  coord_flip() +
+  labs(x="Score", y="n", title="Sentiment analysis - AFINN lexicon") +
+  theme_bw()
+```
+
+```{r}
+# Palabras más frecuentes por sentimiento
+trump %>%
+  unnest_tokens(word, insult) %>%
+  inner_join(get_sentiments("nrc")) %>%
+  count(word, sentiment, sort=TRUE) %>%
+  group_by(sentiment) %>%
+  top_n(8) %>%
+  ggplot(aes(x=reorder(word, n), y=n)) +
+  geom_col() +
+  facet_wrap(~sentiment, scales="free") +
+  coord_flip() +
+  labs(x="Word", y="n", title="Sentiment analysis - nrc lexicon") +
+  theme_bw()
+```
+
