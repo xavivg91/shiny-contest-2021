@@ -1,4 +1,4 @@
-# Shiny contest 2021 <img src='shiny_logo.png' align="right" height="125" /></a>
+# Shiny contest 2021 <img src='Other files/shiny_logo.png' align="right" height="125" /></a>
 
 <!-- badges: start -->
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
