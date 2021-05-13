@@ -11,3 +11,11 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/LauraNavarroSol.svg?style=social)](https://twitter.com/LauraNavarroSol)
 [![Twitter Follow](https://img.shields.io/twitter/follow/Xavier91vg.svg?style=social)](https://twitter.com/Xavier91vg)
 
+In this repository you can find our Shiny application named **Trump's Enemies Network** for [Shiny Contest 2021](https://blog.rstudio.com/2021/03/11/time-to-shiny/), developed by [@lau-cloud](https://github.com/lau-cloud) and me. You can view the application [here](https://xavishiny.shinyapps.io/hate_speech/).
+
+<p align="center">
+<img src='Other files/thumbnail.png' height="225" /></a>
+</p>
+
+
+Trump's Enemies Network is a tool for analyzing all the insults and verbal attacks that the expresident of the United States Donald Trump spread through Twitter during 7 years, from 2015 until the beginning of 2021. It is inspired by The New York Times piece, and it is funded on its data too. The purpose of this app is to explore and detect patterns and trends on his messages through his Twitter account, @realDonaldTrump. At that time, an open debate started: are his messages protected by freedom of expression? Or do we have to block them so as not to cause more polarity and hatred?
