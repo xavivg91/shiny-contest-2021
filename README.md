@@ -11,7 +11,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/LauraNavarroSol.svg?style=social)](https://twitter.com/LauraNavarroSol)
 [![Twitter Follow](https://img.shields.io/twitter/follow/Xavier91vg.svg?style=social)](https://twitter.com/Xavier91vg)
 
-In this repository you can find our Shiny application named **Trump's Enemies Network** for [Shiny Contest 2021](https://blog.rstudio.com/2021/03/11/time-to-shiny/), developed by [@lau-cloud](https://github.com/lau-cloud) and me. You can view the application [here](https://xavishiny.shinyapps.io/hate_speech/).
+In this repository you can find our delivery for the [Shiny Contest 2021](https://blog.rstudio.com/2021/03/11/time-to-shiny/), a Shiny application named **Trump's Enemies Network**, developed by [@lau-cloud](https://github.com/lau-cloud) and me. You can view the application [here](https://xavishiny.shinyapps.io/hate_speech/).
 
 <p align="center">
 <img src='Other files/thumbnail.png' height="225" /></a>
