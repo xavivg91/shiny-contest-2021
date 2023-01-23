@@ -8,8 +8,8 @@
 <!-- badges: end -->
 
 [![GitHub Xavi](https://img.shields.io/github/followers/xavivg91?label=follow&style=social)](https://github.com/xavivg91/)
-[![Twitter Follow](https://img.shields.io/twitter/follow/LauraNavarroSol.svg?style=social)](https://twitter.com/LauraNavarroSol)
-[![Twitter Follow](https://img.shields.io/twitter/follow/Xavier91vg.svg?style=social)](https://twitter.com/Xavier91vg)
+[![Twitter Follow](https://img.shields.io/twitter/url/https/twitter.com/LauraNavarroSol.svg?style=social&label=Follow%20%40LauraNavarroSol)](https://twitter.com/LauraNavarroSol)
+[![Twitter Follow](https://img.shields.io/twitter/url/https/twitter.com/Xavier91vg.svg?style=social&label=Follow%20%40Xavier91vg)](https://twitter.com/Xavier91vg)
 
 In this repository you can find our [delivery](https://community.rstudio.com/t/trumps-enemies-network-shiny-contest-submission/104678) for the [Shiny Contest 2021](https://blog.rstudio.com/2021/03/11/time-to-shiny/), a Shiny application named **Trump's Enemies Network**, developed by [@lau-cloud](https://github.com/lau-cloud) and me. You can view the application [here](https://xavishiny.shinyapps.io/hate_speech/).
 <!--
